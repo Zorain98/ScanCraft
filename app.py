@@ -69,7 +69,7 @@ def extract_shipment_id(text):
     return None
 
 def main():
-    st.title("📦 Shipment ID Extractor")
+    st.title("📦 ScanScript - Shipment ID Extractor")
     st.markdown("Upload images containing shipment details and extract Shipment IDs to CSV")
     
     # Sidebar for instructions
@@ -266,4 +266,5 @@ if __name__ == "__main__":
         ```
 
         """)
+
 
