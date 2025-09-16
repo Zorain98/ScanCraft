@@ -11,12 +11,14 @@ import zipfile
 
 # Configure page
 st.set_page_config(
-    page_title="ScanScript - Shipment ID Extractor",
+    page_title="Shipment ID Extractor",
     page_icon="📦",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
+
 def extract_text_from_image(image):
-    """Extract text from image using OCR"""
+    """Extract text from image using OCR with support for both light and dark themes"""
     try:
         # Convert PIL image to numpy array
         img_array = np.array(image)
@@ -27,21 +29,53 @@ def extract_text_from_image(image):
         else:
             gray = img_array
         
-        # Apply some preprocessing to improve OCR accuracy
-        # Increase contrast
+        # Detect if image has dark background (white text on black/dark background)
+        avg_intensity = np.mean(gray)
+        is_dark_background = avg_intensity < 128
+        
+        # Apply different preprocessing based on background type
+        if is_dark_background:
+            # For dark backgrounds with white text - invert the image
+            gray = cv2.bitwise_not(gray)
+        
+        # Enhance contrast
         gray = cv2.convertScaleAbs(gray, alpha=1.5, beta=0)
         
         # Apply Gaussian blur to reduce noise
         gray = cv2.GaussianBlur(gray, (1, 1), 0)
         
-        # Apply threshold to get black and white image
-        _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        # Try multiple thresholding methods for better results
+        results = []
         
-        # Use pytesseract to extract text
+        # Method 1: OTSU thresholding
+        _, thresh1 = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
         custom_config = r'--oem 3 --psm 6'
-        text = pytesseract.image_to_string(thresh, config=custom_config)
+        text1 = pytesseract.image_to_string(thresh1, config=custom_config)
+        results.append(text1)
         
-        return text
+        # Method 2: Adaptive thresholding
+        thresh2 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+        text2 = pytesseract.image_to_string(thresh2, config=custom_config)
+        results.append(text2)
+        
+        # Method 3: Simple binary threshold with inverted image if needed
+        if not is_dark_background:
+            # For light backgrounds, also try with inverted image
+            gray_inverted = cv2.bitwise_not(gray)
+            _, thresh3 = cv2.threshold(gray_inverted, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+            text3 = pytesseract.image_to_string(thresh3, config=custom_config)
+            results.append(text3)
+        
+        # Method 4: Try with different PSM modes for better text detection
+        custom_config_alt = r'--oem 3 --psm 8'  # Single word mode
+        text4 = pytesseract.image_to_string(thresh1, config=custom_config_alt)
+        results.append(text4)
+        
+        # Combine all results to get the most comprehensive text extraction
+        combined_text = "\n".join(results)
+        
+        return combined_text
+        
     except Exception as e:
         st.error(f"Error processing image: {str(e)}")
         return ""
@@ -69,7 +103,7 @@ def extract_shipment_id(text):
     return None
 
 def main():
-    st.title("📦 ScanScript - Shipment ID Extractor")
+    st.title("📦 Shipment ID Extractor")
     st.markdown("Upload images containing shipment details and extract Shipment IDs to CSV")
     
     # Sidebar for instructions
@@ -264,7 +298,4 @@ if __name__ == "__main__":
         ```bash
         pip install pytesseract opencv-python pillow
         ```
-
         """)
-
-
