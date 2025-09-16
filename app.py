@@ -11,7 +11,7 @@ import zipfile
 
 # Configure page
 st.set_page_config(
-    page_title="Shipment ID Extractor",
+    page_title="ScanCraft - Shipment ID Extractor",
     page_icon="📦",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -103,7 +103,7 @@ def extract_shipment_id(text):
     return None
 
 def main():
-    st.title("📦 Shipment ID Extractor")
+    st.title("📦 ScanCraft - Shipment ID Extractor")
     st.markdown("Upload images containing shipment details and extract Shipment IDs to CSV")
     
     # Sidebar for instructions
@@ -299,3 +299,4 @@ if __name__ == "__main__":
         pip install pytesseract opencv-python pillow
         ```
         """)
+
