@@ -16,6 +16,80 @@ st.set_page_config(
     layout="wide"
 )
 
+# Force light theme
+st.markdown("""
+<style>
+    .stApp {
+        color-scheme: light;
+    }
+    
+    /* Force light theme colors */
+    .stApp > header {
+        background-color: transparent;
+    }
+    
+    .stApp {
+        background-color: white;
+        color: black;
+    }
+    
+    /* Sidebar styling */
+    .css-1d391kg {
+        background-color: #f0f2f6;
+    }
+    
+    /* Button styling */
+    .stButton > button {
+        background-color: #ff6b6b;
+        color: white;
+        border: none;
+    }
+    
+    .stButton > button:hover {
+        background-color: #28a745;
+        color: white;
+    }
+    
+    /* Metrics and info boxes */
+    .metric-container {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+    }
+    
+    /* File uploader */
+    .stFileUploader > div {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+    }
+    
+    /* Progress bar */
+    .stProgress .st-bo {
+        background-color: #28a745;
+    }
+    
+    /* Success/Error messages */
+    .stAlert {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    
+    /* Dataframe styling */
+    .dataframe {
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Headers */
+    h1, h2, h3, h4, h5, h6 {
+        color: #333333 !important;
+    }
+    
+    /* Text */
+    p, div, span {
+        color: #333333 !important;
+    }
+</style>
+""", unsafe_allow_html=True)
 def extract_text_from_image(image):
     """Extract text from image using OCR"""
     try:
@@ -265,4 +339,5 @@ if __name__ == "__main__":
         ```bash
         pip install pytesseract opencv-python pillow
         ```
+
         """)
